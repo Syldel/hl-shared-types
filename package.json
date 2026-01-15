@@ -1,0 +1,42 @@
+{
+  "name": "@syldel/hl-shared-types",
+  "version": "0.0.2",
+  "description": "Shared Hyperliquid types",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "clean": "rm -rf dist",
+    "build": "npm run lint && npm run clean && tsc",
+    "prepublishOnly": "npm run build",
+    "release": "npm version patch && npm publish"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "hyperliquid",
+    "trading",
+    "types",
+    "interfaces",
+    "crypto",
+    "exchange",
+    "defi"
+  ],
+  "author": "Syl. D.",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsonc": "^2.21.0",
+    "eslint-plugin-prettier": "^5.5.5",
+    "jsonc-eslint-parser": "^2.4.2",
+    "prettier": "^3.8.0",
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^8.53.0"
+  }
+}
