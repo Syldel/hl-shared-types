@@ -1,0 +1,15 @@
+src/
+
+tsconfig.json
+tsconfig.eslint.json
+eslint.config.mjs
+.prettierrc
+.gitignore
+
+tests/
+jest.config.js
+
+*.log
+
+.idea/
+.vscode/

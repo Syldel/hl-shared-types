@@ -4,29 +4,21 @@
   "description": "Shared Hyperliquid types",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "format:pkg": "eslint package.json --fix",
     "clean": "rm -rf dist",
     "build": "npm run lint && npm run clean && tsc",
+    "postversion": "npm run format:pkg",
     "prepublishOnly": "npm run build",
-    "release": "npm version patch && npm publish"
+    "release": "npm version patch && npm run build && npm publish"
   },
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [
-    "hyperliquid",
-    "trading",
-    "types",
-    "interfaces",
-    "crypto",
-    "exchange",
-    "defi"
-  ],
+  "keywords": ["hyperliquid", "trading", "types", "interfaces", "crypto", "exchange", "defi"],
   "author": "Syl. D.",
   "license": "ISC",
   "devDependencies": {
