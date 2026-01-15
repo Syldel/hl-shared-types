@@ -1,10 +1,12 @@
 {
   "name": "@syldel/hl-shared-types",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Shared Hyperliquid types",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -18,7 +20,15 @@
   "publishConfig": {
     "access": "public"
   },
-  "keywords": ["hyperliquid", "trading", "types", "interfaces", "crypto", "exchange", "defi"],
+  "keywords": [
+    "hyperliquid",
+    "trading",
+    "types",
+    "interfaces",
+    "crypto",
+    "exchange",
+    "defi"
+  ],
   "author": "Syl. D.",
   "license": "ISC",
   "devDependencies": {
