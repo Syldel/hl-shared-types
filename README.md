@@ -1,8 +1,11 @@
-# @syldel/hl-types 🚀
+# @syldel/hl-shared-types
 
 Ce package centralise les définitions TypeScript pour l'écosystème **Hyperliquid**. Il sert de source de vérité unique pour les interfaces d'API, les types de la blockchain (L1) et les DTOs de communication entre le Gateway, le Bot de trading et l'application mobile.
 
-Inspiré par les standards de `nktkas/hyperliquid` et `nomeida/hyperliquid`.
+<p style="display: flex; justify-content: center; gap: 24px;">
+    <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://i.postimg.cc/28V1jRWW/typescript.png" alt="Typescript" height="120" /></a>
+    <a href="https://app.hyperliquid.xyz/" target="_blank"><img src="https://i.postimg.cc/prPKc0cg/HL-symbol-mint-green.png" alt="Hyperliquid" height="120" /></a>
+</p>
 
 ---
 
@@ -12,7 +15,6 @@ Inspiré par les standards de `nktkas/hyperliquid` et `nomeida/hyperliquid`.
 * **Account** : États du compte, positions Perp et soldes Spot.
 * **Market** : Métadonnées des actifs et résumés de marché.
 * **Orders** : Définitions des ordres ouverts et historiques.
-* **DTO** : Objets de transfert de données pour les requêtes API (NestJS).
 
 ---
 
@@ -34,9 +36,6 @@ Le projet utilise **ESLint** pour la logique et **Prettier** pour le formatage.
 ```bash
 # Vérifier les erreurs
 npx eslint .
-
-# Formater automatiquement
-npx prettier --write .
 ```
 
 ---
@@ -57,17 +56,6 @@ Pour utiliser ce package dans tes autres projets (`bot`, `gateway` ou `mobile`) 
 ---
 
 ## 📦 Publication
-
-### 1. Préparer la version
-Mets à jour la version dans le `package.json` (ex: `1.0.0`), puis :
-```bash
-npm run build
-```
-
-### 2. Publier sur NPM (Public)
-```bash
-npm publish --access public
-```
 
 Le projet utilise des **Granular Access Tokens** pour la publication afin de contourner la double authentification (2FA) manuelle tout en maintenant une sécurité maximale.
 
@@ -105,6 +93,3 @@ npm run release
 * **Types stricts** : Usage de `DecimalString` pour la précision financière.
 
 ---
-
-## ⚖️ Licence
-ISC

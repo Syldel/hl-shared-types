@@ -47,7 +47,13 @@ export default tseslint.config(
     },
     rules: {
       ...jsonc.configs['recommended-with-jsonc'].rules,
-      'prettier/prettier': ['error', { parser: 'json' }],
+      'prettier/prettier': [
+        'error',
+        {
+          parser: 'json',
+          printWidth: 1,
+        },
+      ],
     },
   },
 );

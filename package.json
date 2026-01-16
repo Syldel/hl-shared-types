@@ -1,21 +1,27 @@
 {
   "name": "@syldel/hl-shared-types",
   "version": "0.0.3",
-  "description": "Shared Hyperliquid types",
+  "description": "Shared TypeScript interfaces and types for Hyperliquid integration.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Syldel/hl-shared-types.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Syldel/hl-shared-types/issues"
+  },
+  "homepage": "https://github.com/Syldel/hl-shared-types#readme",
   "files": [
     "dist"
   ],
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format:pkg": "eslint package.json --fix",
     "clean": "rm -rf dist",
     "build": "npm run lint && npm run clean && tsc",
-    "postversion": "npm run format:pkg",
     "prepublishOnly": "npm run build",
-    "release": "npm version patch && npm run build && npm publish"
+    "release": "npm run build && npm version patch && npm publish"
   },
   "publishConfig": {
     "access": "public"

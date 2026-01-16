@@ -9,6 +9,15 @@
     "skipLibCheck": true,
     "moduleResolution": "node"
   },
-  "include": ["src/**/*.ts", "eslint.config.mjs", ".prettierrc"],
-  "exclude": ["node_modules", "dist", ".idea", "**/*.spec.ts"]
+  "include": [
+    "src/**/*.ts",
+    "eslint.config.mjs",
+    ".prettierrc"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".idea",
+    "**/*.spec.ts"
+  ]
 }
