@@ -1,4 +1,4 @@
-import { DecimalString } from '../orders';
+import { DecimalString } from '../common';
 
 export interface HLPerpMarketInfo {
   name: string;

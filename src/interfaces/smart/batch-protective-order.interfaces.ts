@@ -1,4 +1,5 @@
-import { DecimalString, HLOid, HLOrderDetails } from '../orders';
+import { DecimalString, HLOid } from '../common';
+import { HLOrderDetails } from '../orders';
 import { HLProtectiveKind } from './protective-order.interfaces';
 
 export interface BatchProtectiveOrderItem {

@@ -1,4 +1,5 @@
-import { HLApiOrder, HLOid } from '../orders';
+import { HLOid } from '../common';
+import { HLApiOrder } from '../orders';
 
 export interface HLModifyAction {
   type: 'modify';

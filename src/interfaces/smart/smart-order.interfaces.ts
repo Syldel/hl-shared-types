@@ -1,4 +1,4 @@
-import { DecimalString, HLOid } from '../orders';
+import { DecimalString, HLOid } from '../common';
 
 export type HLOrderSize =
   | { type: 'base'; sz: DecimalString }

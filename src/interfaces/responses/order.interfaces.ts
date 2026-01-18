@@ -1,8 +1,8 @@
-import { HLOid } from '../orders';
+import { DecimalString, HLOid } from '../common';
 
 export interface HLPlaceOrderStatus {
   resting?: { oid: HLOid };
-  filled?: { oid: HLOid; totalSz: string; avgPx: string };
+  filled?: { oid: HLOid; totalSz: DecimalString; avgPx: DecimalString };
   error?: string;
 }
 

@@ -1,9 +1,11 @@
+import { Timestamp } from '../common';
+
 export interface HLUserFill {
   coin: string; // e.g. "BTC" or "@107" for spot
   px: string;
   sz: string;
   side: 'A' | 'B';
-  time: number;
+  time: Timestamp;
   oid: number;
   tid: number;
 

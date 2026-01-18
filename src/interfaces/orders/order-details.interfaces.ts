@@ -1,4 +1,4 @@
-export type DecimalString = string;
+import { DecimalString } from '../common';
 
 /**
  * Détails d'un ordre à placer sur Hyperliquid.

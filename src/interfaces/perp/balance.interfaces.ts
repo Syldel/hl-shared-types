@@ -1,6 +1,4 @@
-import { DecimalString } from '../orders/order-details.interfaces';
-
-export type Timestamp = number;
+import { DecimalString, Timestamp } from '../common';
 
 export interface HLPerpLeverage {
   rawUsd: DecimalString;

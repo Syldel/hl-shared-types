@@ -1,4 +1,4 @@
-import { DecimalString } from '../orders/order-details.interfaces';
+import { DecimalString } from '../common';
 
 export interface HLSpotBalance {
   coin: string;

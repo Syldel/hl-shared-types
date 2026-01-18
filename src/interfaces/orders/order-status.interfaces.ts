@@ -1,5 +1,4 @@
-import { HLOid } from './open-order.interfaces';
-import { DecimalString } from './order-details.interfaces';
+import { DecimalString, HLOid, Timestamp } from '../common';
 
 export type HLOrderStatus =
   | 'open'
@@ -38,7 +37,7 @@ export interface HLOrderStatusDetails {
   limitPx: DecimalString;
   sz: DecimalString;
   oid: HLOid;
-  timestamp: number;
+  timestamp: Timestamp;
   triggerCondition: string;
   isTrigger: boolean;
   triggerPx: DecimalString;
@@ -54,7 +53,7 @@ export interface HLOrderStatusDetails {
 export interface HLOrderStatusData {
   order: HLOrderStatusDetails;
   status: HLOrderStatus;
-  statusTimestamp: number;
+  statusTimestamp: Timestamp;
 }
 
 export interface HLOrderStatusResponse {
