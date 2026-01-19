@@ -84,6 +84,11 @@ La commande suivante automatise le build, l'incrémentation de version et l'envo
 npm run release
 ```
 
+### Pousse le commit ET le tag sur GitHub
+```bash
+git push origin main --follow-tags
+```
+
 ---
 
 ## 📝 Conventions de code
