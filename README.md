@@ -44,13 +44,13 @@ npx eslint .
 
 Pour utiliser ce package dans tes autres projets (`bot`, `gateway` ou `mobile`) sans le publier sur NPM :
 
-1.  Dans le dossier `hl-types` :
+1.  Dans le dossier `hl-shared-types` :
     ```bash
     npm link
     ```
 2.  Dans ton projet (ex: `my-trading-bot`) :
     ```bash
-    npm link @syldel/hl-types
+    npm link @syldel/hl-shared-types
     ```
 
 ---
