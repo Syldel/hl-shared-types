@@ -1,5 +1,6 @@
 export * from './actions/index';
 export * from './common/index';
+export * from './infos/index';
 export * from './orders/index';
 export * from './params/index';
 export * from './responses/index';

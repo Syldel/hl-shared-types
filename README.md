@@ -2,8 +2,9 @@
 
 Ce package centralise les définitions TypeScript pour l'écosystème **Hyperliquid**. Il sert de source de vérité unique pour les interfaces d'API, les types de la blockchain (L1) et les DTOs de communication entre le Gateway, le Bot de trading et l'application mobile.
 
-<p style="display: flex; justify-content: center; gap: 24px;">
+<p align="center">
     <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://i.postimg.cc/28V1jRWW/typescript.png" alt="Typescript" height="120" /></a>
+    &nbsp;&nbsp;&nbsp;&nbsp;
     <a href="https://app.hyperliquid.xyz/" target="_blank"><img src="https://i.postimg.cc/prPKc0cg/HL-symbol-mint-green.png" alt="Hyperliquid" height="120" /></a>
 </p>
 
