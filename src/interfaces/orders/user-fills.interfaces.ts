@@ -23,3 +23,12 @@ export interface HLUserFill {
 }
 
 export type HLUserFillsResponse = HLUserFill[];
+
+export interface HLUserFillsRequest {
+  aggregateByTime?: boolean;
+}
+
+export interface HLUserFillsByTimeRequest extends HLUserFillsRequest {
+  startTime: Timestamp;
+  endTime?: Timestamp;
+}
