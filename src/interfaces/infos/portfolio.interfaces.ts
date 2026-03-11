@@ -1,16 +1,27 @@
 import { DecimalString, Timestamp } from '../common';
 
-/** Un point de donnée : [Timestamp, Valeur] */
+/**
+ * Time-series data point represented as [timestamp, value].
+ */
 export type PortfolioPoint = [Timestamp, DecimalString];
 
-/** Données de portfolio pour une période donnée */
+/**
+ * Portfolio statistics for a given time period.
+ */
 export interface PortfolioStats {
+  /** Historical account value over time. */
   accountValueHistory: PortfolioPoint[];
+
+  /** Historical profit and loss over time. */
   pnlHistory: PortfolioPoint[];
+
+  /** Total traded volume for the period. */
   vlm: DecimalString;
 }
 
-/** Labels de périodes supportés par Hyperliquid */
+/**
+ * Supported portfolio time ranges returned by the API.
+ */
 export type PortfolioPeriod =
   | 'day'
   | 'week'
@@ -21,7 +32,12 @@ export type PortfolioPeriod =
   | 'perpMonth'
   | 'perpAllTime';
 
-/** * La réponse est un tableau de tuples : [Période, Stats]
- * Exemple: ["day", { accountValueHistory: [...], ... }]
+/**
+ * Portfolio response returned by the `portfolio` endpoint.
+ *
+ * Each entry is a tuple: [period, stats].
+ *
+ * Example:
+ * ["day", { accountValueHistory: [...], pnlHistory: [...], vlm: "12345.67" }]
  */
 export type PortfolioResponse = [PortfolioPeriod, PortfolioStats][];
