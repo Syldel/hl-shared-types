@@ -1,4 +1,5 @@
-import { DecimalString, HLOid, Timestamp } from '../common';
+import { HLOid, Timestamp } from '../common';
+import { HLFrontendOpenOrder } from './open-order.interfaces';
 
 export type HLOrderStatus =
   | 'open'
@@ -31,23 +32,8 @@ export type HLOrderStatus =
   | 'oracleRejected'
   | 'perpMaxPositionRejected';
 
-export interface HLOrderStatusDetails {
-  coin: string;
-  side: 'A' | 'B';
-  limitPx: DecimalString;
-  sz: DecimalString;
-  oid: HLOid;
-  timestamp: Timestamp;
-  triggerCondition: string;
-  isTrigger: boolean;
-  triggerPx: DecimalString;
-  children: unknown[];
-  isPositionTpsl: boolean;
-  reduceOnly: boolean;
-  orderType: string; // "Market"
-  origSz: DecimalString;
-  tif: string;
-  cloid: string | null;
+export interface HLOrderStatusDetails extends HLFrontendOpenOrder {
+  children: unknown[]; // Specific to order status queries
 }
 
 export interface HLOrderStatusData {

@@ -1,4 +1,4 @@
-import { DecimalString } from '../common';
+import { DecimalString, HLTif } from '../common';
 
 /**
  * Détails d'un ordre à placer sur Hyperliquid.
@@ -33,7 +33,7 @@ export interface HLOrderDetails {
   sz: DecimalString;
   reduceOnly: boolean;
   orderType:
-    | { limit: { tif: 'Alo' | 'Ioc' | 'Gtc' } }
+    | { limit: { tif: HLTif } }
     | {
         trigger: {
           isMarket: boolean;
@@ -55,7 +55,7 @@ export interface HLApiOrder {
   s: DecimalString; // taille
   r: boolean; // reduceOnly
   t:
-    | { limit: { tif: 'Alo' | 'Ioc' | 'Gtc' } }
+    | { limit: { tif: HLTif } }
     | {
         trigger: {
           isMarket: boolean;
