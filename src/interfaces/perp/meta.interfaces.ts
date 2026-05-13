@@ -127,6 +127,15 @@ export interface HLPerpMarket {
   /** Margin table identifier. */
   marginTableId?: number;
 
+  /** Whether the market only supports isolated margin mode. */
+  onlyIsolated?: boolean;
+
+  /** Whether the market has been delisted by the exchange. */
+  isDelisted?: boolean;
+
+  /** Optional restriction applied to the market margin mode. */
+  marginMode?: 'strictIsolated' | 'noCross';
+
   /** Current mark price. */
   markPrice?: DecimalString;
 
@@ -138,4 +147,30 @@ export interface HLPerpMarket {
 
   /** Current open interest. */
   openInterest?: DecimalString;
+}
+
+/**
+ * Normalized perpetual market enriched with additional runtime and microstructure data.
+ */
+export interface HLPerpMarketExtended extends HLPerpMarket {
+  /** Oracle price reference. */
+  oraclePrice?: DecimalString;
+
+  /** Premium vs oracle. */
+  premium?: DecimalString;
+
+  /** Daily notional volume. */
+  dayNotionalVolume?: DecimalString;
+
+  /** Estimated bid impact price. */
+  impactBidPrice?: DecimalString;
+
+  /** Estimated ask impact price. */
+  impactAskPrice?: DecimalString;
+
+  /** Previous day reference price. */
+  prevDayPrice?: DecimalString;
+
+  /** Estimated spread from impact prices. */
+  estimatedSpreadBps?: number;
 }
