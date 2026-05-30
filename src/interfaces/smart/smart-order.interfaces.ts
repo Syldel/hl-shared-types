@@ -1,4 +1,4 @@
-import { DecimalString, HLOid } from '../common';
+import { DecimalString, HLTif, HLOid } from '../common';
 
 export type HLOrderSize =
   | { type: 'base'; sz: DecimalString }
@@ -10,6 +10,7 @@ export interface InstantOrderParams {
   isBuy: boolean; // Maybe change to: side: 'long' | 'short' ?
   size: HLOrderSize;
   reduceOnly?: boolean;
+  tif?: HLTif;
   isTestnet?: boolean;
   maxRetries?: number;
   delayMs?: number;
