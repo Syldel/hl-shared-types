@@ -16,10 +16,11 @@
     "dist"
   ],
   "scripts": {
+    "test": "jest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "clean": "rm -rf dist",
-    "build": "npm run lint && npm run clean && tsc",
+    "build": "npm run lint && npm run test && npm run clean && tsc",
     "prepublishOnly": "npm run build",
     "release": "npm run build && npm version patch && npm publish"
   },
@@ -38,12 +39,15 @@
   "author": "Syl. D.",
   "license": "ISC",
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jsonc": "^2.21.0",
     "eslint-plugin-prettier": "^5.5.5",
+    "jest": "^30.5.2",
     "jsonc-eslint-parser": "^2.4.2",
     "prettier": "^3.8.0",
+    "ts-jest": "^29.4.13",
     "typescript": "^5.3.3",
     "typescript-eslint": "^8.53.0"
   }

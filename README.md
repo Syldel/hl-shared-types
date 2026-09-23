@@ -16,6 +16,33 @@ Ce package centralise les définitions TypeScript pour l'écosystème **Hyperliq
 * **Account** : États du compte, positions Perp et soldes Spot.
 * **Market** : Métadonnées des actifs et résumés de marché.
 * **Orders** : Définitions des ordres ouverts et historiques.
+* **Format** : les règles de **tick et de lot** d'Hyperliquid — la seule logique exécutable
+  du package, et la seule qui décide ce qui part vers l'exchange.
+
+---
+
+## ⚠️ `format/` : du code, pas seulement des types
+
+`formatPrice`, `formatSize`, `priceDecimals` et `snapPrice` appliquent les règles de
+[tick and lot size](https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/tick-and-lot-size)
+d'Hyperliquid. Elles vivent ici pour qu'il n'en existe **qu'une seule implémentation** :
+le gateway les applique en sortie, et le bot doit pouvoir savoir *avant d'envoyer* ce qui
+sera posé. Deux implémentations, c'est la garantie qu'un émetteur croira un jour avoir posé
+autre chose que ce qui l'a été — ce qui s'est produit, et se paie sur un stop loss.
+
+Trois conséquences pour qui touche à ce dossier :
+
+* **aucune dépendance**, ici moins qu'ailleurs : le consommateur de ce code est le processus
+  qui signe les transactions ;
+* **rien ne passe par `Number`** — tout le calcul se fait sur les chiffres écrits, en
+  `BigInt` ;
+* **la conformité se prouve** : `test/tick-and-lot.spec.ts` rejoue *tous* les exemples de la
+  documentation, sourcés et datés. `npm run build` lance les tests avant de compiler — une
+  logique exécutable non testée ne se publie pas.
+
+```bash
+npm test
+```
 
 ---
 
