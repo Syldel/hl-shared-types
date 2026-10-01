@@ -1,0 +1,26 @@
+# Fins de ligne : LF partout, y compris dans la copie de travail Windows.
+#
+# La règle vit ici et non dans `core.autocrlf` parce qu'une configuration de
+# machine n'existe ni sur l'autre poste ni sur une CI. Ce dépôt n'avait ni
+# `.gitattributes` ni override local, donc il héritait du `core.autocrlf=true`
+# posé au niveau *système* par le programme d'installation Git for Windows —
+# aucun choix de ce dépôt.
+#
+# Constaté le 2026-10-01 (`git ls-files --eol`) : l'index est **déjà en LF sur
+# ses 58 fichiers**, tandis que la copie de travail en comptait 45 en CRLF
+# contre 13 en LF. Cette règle ne renormalise donc rien de l'historique : elle
+# aligne la copie de travail sur ce qui était déjà versionné, et surtout elle
+# rend ce comportement indépendant de la machine qui clone.
+#
+# Ce dépôt est publié sur npm, ce qui ajoute un enjeu que les autres n'ont pas :
+# `files: ["dist"]` embarque du code **généré par tsc**, dont les fins de ligne
+# suivent celles des sources. Un paquet dont le contenu dépend du poste qui l'a
+# publié est un paquet dont deux versions identiques diffèrent.
+* text=auto eol=lf
+
+# Préventif : aucun script shell ni batch n'est versionné ici aujourd'hui. Si
+# l'un apparaît, un CR résiduel derrière un shebang casse l'exécution en
+# silence et seulement sur la machine qui le lance ; cmd.exe, lui, veut du CRLF.
+*.sh  text eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
