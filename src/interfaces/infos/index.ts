@@ -3,3 +3,4 @@ export * from './portfolio.interfaces';
 export * from './l2Book.interfaces';
 export * from './active-asset.interfaces';
 export * from './account-abstraction.type';
+export * from './collateral-balance.interfaces';
