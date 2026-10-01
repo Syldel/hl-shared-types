@@ -59,6 +59,30 @@ export interface HLPerpMeta {
 
   /** Margin configuration tables. */
   marginTables: HLPerpMarginTableEntry[];
+
+  /**
+   * Index du token qui sert de collatéral à **tout** ce dex — `0` pour USDC.
+   *
+   * C'est la correspondance dex → collatéral que l'exchange publie, et la seule
+   * qui ne vieillit pas. Les trois dépôts en tenaient jusqu'ici une copie en
+   * dur (`cash → USDT`, `hyna → USDE`, sinon USDC) : elle était **juste** quand
+   * elle a été écrite — les marchés Dreamcash s'appelaient bien `TSLA-USDT` et
+   * la marge HyENA était rendue en USDE — mais ces deux dex ont été éteints en
+   * juin et août 2026, et elle ne couvrait de toute façon que 2 des 10 dex
+   * déployés. Relevé le 2026-09-30 : les quatre dex vivants (`xyz`, `para`,
+   * `mkts`, `io`) rendent tous `collateralToken: 0`.
+   *
+   * Un `index`, et non un symbole : c'est ce que fait le calcul officiel du
+   * ratio de compte unifié, qui apparie ensuite `spotBalances[].token`. Deux
+   * tokens peuvent porter le même nom ; aucun ne partage un index. Le symbole
+   * se retrouve dans `spotMeta.tokens[].name`, pour l'affichage seulement.
+   *
+   * ⚠️ Optionnel, bien que l'API le rende sur tous les dex mesurés — y compris
+   * le principal : la doc de `meta` ne le montre pas dans son exemple (celle de
+   * `metaAndAssetCtxs`, si). Une réponse qui ne le porterait pas doit se
+   * traiter comme une absence de réponse, jamais comme « USDC par défaut ».
+   */
+  collateralToken?: number;
 }
 
 /**
