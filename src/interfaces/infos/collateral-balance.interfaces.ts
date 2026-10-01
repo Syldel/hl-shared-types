@@ -58,4 +58,28 @@ export type CollateralBalance =
       status: 'unknown-collateral';
       mode: AccountAbstractionMode;
       asset: string;
+    }
+  /**
+   * Le compte est dans un mode dont ce gateway ne sait pas lire le collatéral.
+   *
+   * Deux cas, et c'est un refus **délibéré** plutôt qu'une approximation :
+   *
+   * - **`portfolioMargin`** réunit plusieurs actifs en un seul portefeuille
+   *   (HYPE, BTC, USDC, USDT à ce jour). Rendre le solde d'un seul d'entre eux
+   *   sous-estimerait le capital, et les agréger demanderait de valoriser HYPE
+   *   et BTC en dollars — donc d'introduire une source de **prix** dans un
+   *   calcul de collatéral. C'est un chantier, pas une ligne ;
+   * - **`dexAbstraction`** est arrêté par l'exchange. La doc le décrit (USDC
+   *   depuis le solde perp, tout autre collatéral depuis le spot), mais aucun
+   *   compte ne permet de l'éprouver — et une implémentation non exercée d'un
+   *   mode qu'on ne peut pas tester vaut moins qu'un refus net.
+   *
+   * L'appelant doit le traiter comme les autres statuts sans montant : ne rien
+   * dimensionner, et le dire. Un nombre plausible aurait traversé tout le
+   * système sans rien déclencher.
+   */
+  | {
+      status: 'unsupported-mode';
+      mode: AccountAbstractionMode;
+      asset: string;
     };
