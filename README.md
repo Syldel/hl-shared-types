@@ -119,10 +119,48 @@ git push origin main --follow-tags
 
 ---
 
+## 🔍 Avant de déclarer un champ : d'où vient l'information
+
+Chaque champ de ce paquet est une **affirmation sur ce que l'exchange rend**, et les trois
+dépôts la croient. Une affirmation fausse ne se voit pas : elle se paie plus loin, sur un
+dimensionnement ou un affichage. Avant d'ajouter, de resserrer ou d'élargir un type, lire
+[`nest-hyperliquid-gateway/docs/sources.md`](https://github.com/Syldel/nest-hyperliquid-gateway/blob/main/docs/sources.md).
+
+En résumé de ce document :
+
+* **La mesure** (captures du gateway, lectures `/hyperliquid/info/*`) prouve qu'une forme
+  existe, jamais qu'elle soit la seule. Un `null` vu une fois clôt la nullité d'un champ ;
+  mille valeurs présentes ne closent rien. Et un échantillon se décrit honnêtement — 22
+  instantanés d'une même position ne sont pas 22 observations.
+* **La doc officielle** fait autorité sur les noms, et tient sur **un exemple par
+  endpoint** : elle est donc muette sur ce qui varie. Un champ absent d'un exemple n'est ni
+  absent de l'API ni optionnel.
+* **Le SDK Python officiel**
+  ([hyperliquid-dex/hyperliquid-python-sdk](https://github.com/hyperliquid-dex/hyperliquid-python-sdk))
+  est de première partie **et typé** : il tranche les unions, les champs propres à une
+  variante et les valeurs énumérées que la prose laisse en suspens. Mais il ne type pas
+  tout, et son silence n'est pas une réponse.
+* **Les SDK communautaires ne concluent pas.** La page d'API en recommande plusieurs — un en
+  Rust, deux en TypeScript, plus CCXT — et le dit : ils sont écrits par la communauté. Être
+  lié par la doc officielle donne de la visibilité, pas de l'autorité ; ils lisent la même
+  API que nous et peuvent s'être trompés pareil. Ils servent à repérer une question, jamais
+  à la clore — et le piège est celui en TypeScript, dont on a envie de recopier une union
+  toute faite. Il n'existe **aucun SDK TypeScript de première partie**.
+
+`HLPerpLeverage` est le cas d'école : ni les captures (que du `cross`) ni l'exemple de la
+doc (que de l'`isolated`) ne pouvaient trancher, et `hyperliquid/utils/types.py` déclare les
+deux branches. Les types portent leur source et leur date en commentaire — c'est ce qui
+permet de les contredire plus tard au lieu de devoir tout remesurer.
+
+---
+
 ## 📝 Conventions de code
 
 * **Sauts de ligne** : Une ligne vide est automatiquement insérée entre chaque `interface` pour une meilleure lisibilité.
 * **Naming** : Toutes les interfaces commencent par `HL`.
 * **Types stricts** : Usage de `DecimalString` pour la précision financière.
+* **Fins de ligne** : LF partout, imposé par `.gitattributes` et non par la configuration de
+  la machine — le paquet publié embarque du code généré par `tsc`, dont les fins de ligne
+  suivent celles des sources.
 
 ---
