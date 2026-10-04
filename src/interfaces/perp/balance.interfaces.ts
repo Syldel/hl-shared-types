@@ -26,6 +26,12 @@ import { DecimalString, Timestamp } from '../common';
  * porte `rawUsd: "-95.059824"`. Aucun des deux ne couvre l'autre branche — le
  * SDK, lui, les couvre toutes les deux.
  *
+ * ⚠️ Ce « officiel » ne se déduit **pas** du nom de l'organisation GitHub, qui
+ * n'est d'ailleurs pas vérifiée (`is_verified: false`). Il repose sur la page
+ * d'API de la documentation, qui distingue ce SDK des bibliothèques
+ * communautaires, et sur PyPI, qui le publie sous `hello@hyperliquid.xyz`. La
+ * chaîne et ses limites : `nest-hyperliquid-gateway/docs/sources.md`.
+ *
  * Pourquoi l'union et non `rawUsd?: DecimalString` : l'optionnel rendrait
  * `lev.rawUsd` lisible sans vérifier `type`, et `Number(undefined)` rend `NaN`
  * sans un mot. L'union en fait une erreur de compilation. Et si un cross
