@@ -116,7 +116,17 @@ export interface HlUserFees {
    * dans ce commentaire plutôt que dans un type qui ne le dirait pas.
    */
   trial: unknown;
-  feeTrialReward: DecimalString;
+  /**
+   * ⚠️ **La documentation appelle ce champ `feeTrialReward` ; le serveur envoie
+   * `feeTrialEscrow`.** Relevé le 2026-10-12 sur une vraie réponse de
+   * `GET /hyperliquid/info/user-fees` — c'est le nom servi qui fait foi, et le
+   * type écrit d'après la documentation était faux sur ce point.
+   *
+   * Aucun code ne le lit, donc rien n'a cassé : c'est précisément le genre
+   * d'écart qu'un type recopié d'une page de documentation porte en silence
+   * jusqu'à ce qu'on regarde la réponse.
+   */
+  feeTrialEscrow: DecimalString;
   /** `null` quand il n'y en a pas de prévu. */
   nextTrialAvailableTimestamp: number | null;
 
