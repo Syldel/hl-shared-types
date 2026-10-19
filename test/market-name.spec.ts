@@ -53,6 +53,75 @@ describe('hlMarketKind', () => {
   it('designates no market when the coin half is missing', () => {
     expect(hlMarketKind('vntl:')).toBeNull();
   });
+
+  // Les perps réels du relevé du 2026-10-19 (544, 11 dex) : aucun ne porte de caractère hors
+  // `A-Za-z0-9` et `:`. Les noms avec chiffres, minuscule initiale ou préfixe restent des perps.
+  it.each([
+    ['1000SHIB', 'perp'],
+    ['kPEPE', 'perp'],
+    ['AI16Z', 'perp'],
+    ['xyz:XYZ100', 'builderPerp'],
+  ])('keeps reading the real perp %s as %s', (name, kind) => {
+    expect(hlMarketKind(name)).toBe(kind);
+  });
+});
+
+/**
+ * ============================================================================
+ * LES OUTCOMES (HIP-4) NE SONT NI DES PERPS NI DES PAIRES SPOT
+ *
+ * Source : doc « Asset IDs », relue le 2026-10-19 : un outcome a un coin
+ * `#<encodage>` et un jeton `+<encodage>`, avec `encodage = 10 × outcome + côté`
+ * (côté 0 ou 1) ; exemple de la doc : outcome 1, côté 0 → `#10`, `+10`, et l'asset
+ * id `100000010`. `outcomeMeta` en rend 329 sur le mainnet ce jour-là.
+ *
+ * Avant cette règle, `#10` et `+10` rendaient `perp` — « tout le reste est un perp
+ * du dex principal » — et auraient été cherchés dans le mauvais univers.
+ * ============================================================================
+ */
+describe('hlMarketKind — outcomes', () => {
+  it.each([
+    // L'exemple de la doc : outcome 1, côté 0.
+    '#10',
+    '+10',
+    // outcome 1, côté 1.
+    '#11',
+    // Un outcome réel d'`outcomeMeta` (14200), côté 0 puis 1.
+    '#142000',
+    '#142001',
+    '+142000',
+    // Le `+1230` de l'exemple de solde de la doc « Spot ».
+    '+1230',
+    '#0',
+  ])('reads %s as an outcome', (name) => {
+    expect(hlMarketKind(name)).toBe('outcome');
+  });
+
+  it('never reads an outcome as a perp: that was the defect', () => {
+    for (const name of ['#10', '+10', '#142000', '+1230']) {
+      expect(hlMarketKind(name)).not.toBe('perp');
+    }
+  });
+
+  // Strict : la forme documentée est `#` ou `+` puis un entier. Le reste n'est pas un outcome — et
+  // n'est pas non plus un perp, car ces deux marques n'en désignent jamais : c'est un doute.
+  it.each(['#', '+', '#1a', '+-3', '#1.5', '#10 ', '#10:x', '+0x1F', '##10'])(
+    'designates no market for "%s": it carries an outcome mark without the documented form',
+    (name) => {
+      expect(hlMarketKind(name)).toBeNull();
+    },
+  );
+
+  // La marque ne compte qu'en tête : ailleurs, `#` et `+` n'ont pas de sens particulier ici.
+  it('does not take a mark in the middle of a name for an outcome', () => {
+    expect(hlMarketKind('BTC#10')).toBe('perp');
+    expect(hlMarketKind('xyz:#10')).toBe('builderPerp');
+  });
+
+  // La paire spot prime toujours : un nom qui porte `/` ou `@` reste spot.
+  it('still lets the spot pair win when a name carries both marks', () => {
+    expect(hlMarketKind('#10/USDC')).toBe('spot');
+  });
 });
 
 describe('hlPerpDexOf', () => {
@@ -83,5 +152,12 @@ describe('hlPerpDexOf', () => {
     expect(hlPerpDexOf('')).toBeNull();
     expect(hlPerpDexOf(':BTC')).toBeNull();
     expect(hlPerpDexOf('vntl:')).toBeNull();
+  });
+
+  // Un outcome n'est pas un perp du dex principal : `''` voudrait dire « charge le dex principal ».
+  it('has no perp dex to offer for an outcome, nor for a name that carries an outcome mark', () => {
+    expect(hlPerpDexOf('#10')).toBeNull();
+    expect(hlPerpDexOf('+1230')).toBeNull();
+    expect(hlPerpDexOf('#1a')).toBeNull();
   });
 });

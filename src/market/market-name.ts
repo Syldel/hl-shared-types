@@ -2,16 +2,38 @@
  * ============================================================================
  * LE NOM D'UN MARCHÉ DIT DE QUEL CATALOGUE IL RELÈVE
  *
- * Source : doc Hyperliquid « Asset IDs », relevée le 2026-09-30.
+ * Source : doc Hyperliquid « Asset IDs », relevée le 2026-09-30 et relue le
+ * 2026-10-19 (avec les pages « Info endpoint », « Spot » et HIP-4, relues le
+ * même jour) :
  *
  * - un perp déployé par un builder porte **toujours** un nom `{dex}:{coin}` —
  *   la doc écrit « always », ce n'est pas une heuristique ;
  * - une paire spot se désigne par `10000 + spotInfo.index`, d'où la forme
  *   protocolaire `@<index>` ; seules les canoniques portent `BASE/QUOTE`.
  *   L'exemple HYPE de la doc (token 150, spot 107) recoupe le relevé du
- *   2026-09-30 : le solde porte `token: 150`, la paire s'appelle `@107` ;
+ *   2026-09-30 : le solde porte `token: 150`, la paire s'appelle `@107`. La
+ *   page « Info endpoint » le dit : pour le spot, `coin` vaut `PURR/USDC` pour
+ *   PURR et `@{index}` pour toutes les autres paires ;
+ * - un **outcome** (HIP-4) porte un coin `#<encodage>` et un jeton
+ *   `+<encodage>`, avec `encodage = 10 × outcome + côté` (côté 0 ou 1) et un
+ *   identifiant d'actif `100 000 000 + encodage` — « Outcomes share most
+ *   implementation details with spot trading », mais leur représentation par
+ *   l'API diffère du spot comme des perps. Exemple de la doc : outcome 1, côté
+ *   0 → `#10`, `+10`, `100000010`. La page HIP-4, elle, ne décrit aucun format
+ *   de nom : c'est « Asset IDs » qui le fait ;
  * - tout le reste est un perp du dex principal, que l'API désigne par un `dex`
  *   vide.
+ *
+ * ⚠️ « Tout le reste est un perp » était **faux** pour les outcomes jusqu'au
+ * 2026-10-19 : `#10` et `+10` rendaient `perp`. Ils existent sur le mainnet
+ * (`outcomeMeta` en rend 329 ce jour-là, dont des contests sportifs et des
+ * binaires sur prix), alors que la page HIP-4 ne décrit qu'un premier marché
+ * quotidien : la doc est en retard sur le réseau. Un outcome est donc un genre
+ * à part, que les consommateurs refusent ou traitent — jamais un perp par défaut.
+ *
+ * Mesuré le 2026-10-19 (`allPerpMetas` : 544 perps ; `spotMeta` : 334 paires,
+ * 508 jetons) : aucun nom ne porte de caractère hors `A-Za-z0-9`, `:`, `/`, `@` ;
+ * les noms de paires spot sont 1 `PURR/USDC` et 333 `@N`, aucun autre.
  *
  * Ce module vit ici, et non dans le bot ou le mobile, pour la même raison que
  * `tick-and-lot` : qu'il n'en existe **qu'une seule implémentation**. Les deux
@@ -39,7 +61,20 @@ export type HLMarketKind =
   /** Perp déployé par un builder (HIP-3) : `vntl:ROBOT`, `xyz:AAPL`. */
   | 'builderPerp'
   /** Paire spot : `PURR/USDC` (canonique) ou `@107` (forme protocolaire). */
-  | 'spot';
+  | 'spot'
+  /**
+   * Marché outcome (HIP-4) : coin `#10` ou jeton `+10`, soit `#<encodage>` /
+   * `+<encodage>` avec `encodage = 10 × outcome + côté`. Ni un perp, ni une paire
+   * spot : son asset id est `100 000 000 + encodage`, et l'API le représente
+   * autrement que les deux.
+   */
+  | 'outcome';
+
+/** `#` (coin) ou `+` (jeton) en tête : la marque d'un outcome, jamais celle d'un perp. */
+const OUTCOME_MARK = /^[#+]/;
+
+/** La forme documentée : `#<encodage>` ou `+<encodage>`, l'encodage étant un entier. */
+const OUTCOME_NAME = /^[#+]\d+$/;
 
 /**
  * Le genre de marché que ce nom désigne, ou `null` quand le nom n'en désigne
@@ -51,6 +86,14 @@ export function hlMarketKind(name: string): HLMarketKind | null {
   // Le spot se teste en premier : un nom peut porter les deux marques
   // (`cash:XYZ/USDT`), et c'est alors la paire qui prime sur le dex.
   if (name.includes('/') || name.startsWith('@')) return 'spot';
+
+  // Un outcome : `#` ou `+`, puis l'encodage — un entier, rien d'autre. Strict à
+  // dessein : `#` seul, `#1a` ou `+-3` ne sont pas la forme documentée, et ne sont
+  // donc **pas** reconnus comme outcome. Ils ne sont pas non plus des perps : ces
+  // deux marques ne désignent jamais un perp, donc un nom qui les porte hors de la
+  // forme documentée est un **doute** (`null`), pas « tout le reste ». Doit précéder
+  // la règle « tout le reste est un perp ».
+  if (OUTCOME_MARK.test(name)) return OUTCOME_NAME.test(name) ? 'outcome' : null;
 
   const separator = name.indexOf(':');
   if (separator === -1) return 'perp';
