@@ -105,8 +105,11 @@ export type CollateralBalance =
  * compilation, et non une divergence découverte en réel. Un code qui n'a besoin
  * que du résultat garde `CollateralBalance`, dont celui-ci est un sous-type.
  *
- * ⚠️ `asset` est la valeur brute de `?asset=` : tant que le gateway ne refuse pas
- * une requête sans ce paramètre, il manque de la réponse dans ce cas (la clé est
- * omise par JSON) et ce type est alors faux. Les clients le fournissent toujours.
+ * `asset` est la valeur de `?asset=`, et le gateway refuse en 400 une requête où
+ * il manque, est vide ou est répété : toute réponse 200 le porte donc, en chaîne
+ * non vide. Ce refus date du 2026-10-19 ; avant lui, une requête sans `?asset=`
+ * recevait une réponse sans cette clé (omise par JSON), et ce type était faux
+ * pour elle. Éprouvé par les tests du contrôleur, pas contre un gateway qui
+ * tourne.
  */
 export type CollateralBalanceResponse = { asset: string } & CollateralBalance;
