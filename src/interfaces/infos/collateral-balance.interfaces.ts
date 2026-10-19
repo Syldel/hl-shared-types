@@ -5,11 +5,20 @@ import { AccountAbstractionMode } from './account-abstraction.type';
  * ============================================================================
  * LE COLLATÉRAL D'UN MARCHÉ : TROIS RÉPONSES, PAS UN NOMBRE
  *
- * Réponse de `GET /hyperliquid/info/collateral-balance` du gateway.
+ * Ce que le **service** du gateway calcule pour un marché donné
+ * (`getCollateralBalance(asset)`). La **route**
+ * `GET /hyperliquid/info/collateral-balance` répond autre chose :
+ * `CollateralBalanceResponse`, plus bas, qui y ajoute `asset`.
  *
  * Ce type vit ici parce qu'il **traverse** le réseau : le gateway le produit,
  * le bot le consomme. Une copie de chaque côté finirait par diverger, et la
  * divergence porterait sur un chiffre qui dimensionne des ordres.
+ *
+ * Aucun des quatre cas ne porte `asset` : l'appelant l'a passé en paramètre et
+ * le connaît. Jusqu'au 2026-10-19 deux d'entre eux le rendaient, les deux autres
+ * non, et la route l'ajoutait de toute façon : trois sources pour une valeur
+ * que personne n'avait besoin de relire dans le résultat, et un faux gateway
+ * qui l'avait omis faute d'un type de réponse à compiler contre.
  *
  * Trois cas, parce que leurs remèdes sont trois : approvisionner le compte,
  * corriger le nom du marché, ou attendre que le registre soit synchronisé.
@@ -57,7 +66,6 @@ export type CollateralBalance =
   | {
       status: 'unknown-collateral';
       mode: AccountAbstractionMode;
-      asset: string;
     }
   /**
    * Le compte est dans un mode dont ce gateway ne sait pas lire le collatéral.
@@ -81,5 +89,24 @@ export type CollateralBalance =
   | {
       status: 'unsupported-mode';
       mode: AccountAbstractionMode;
-      asset: string;
     };
+
+/**
+ * Ce que la **route** `GET /hyperliquid/info/collateral-balance` répond : le
+ * résultat du service, précédé de `asset`, le marché interrogé (`?asset=`).
+ *
+ * Le contrôleur du gateway fait `{ asset, ...balance }` quel que soit le
+ * statut. Mesuré sur un `ok` le 2026-10-18 (quatre lectures de la capture réelle
+ * du bot, ETH, compte unifié) : `asset` y est la première clé. Pour les trois
+ * autres statuts, c'est une lecture du contrôleur, pas une mesure.
+ *
+ * Ce type est celui qu'un client HTTP et un double de la route (le faux gateway
+ * du bot) doivent viser : un écart de forme avec la route devient une erreur de
+ * compilation, et non une divergence découverte en réel. Un code qui n'a besoin
+ * que du résultat garde `CollateralBalance`, dont celui-ci est un sous-type.
+ *
+ * ⚠️ `asset` est la valeur brute de `?asset=` : tant que le gateway ne refuse pas
+ * une requête sans ce paramètre, il manque de la réponse dans ce cas (la clé est
+ * omise par JSON) et ce type est alors faux. Les clients le fournissent toujours.
+ */
+export type CollateralBalanceResponse = { asset: string } & CollateralBalance;
