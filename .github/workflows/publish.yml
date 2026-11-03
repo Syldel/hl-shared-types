@@ -1,0 +1,125 @@
+name: Publish
+
+# Publication de confiance (OIDC) en mode « stage » : ce workflow dépose la
+# version sur npm sans la rendre publique ; elle ne l'est qu'après approbation
+# avec la 2FA du mainteneur, sur npmjs.com ou par `npm stage approve`.
+# Aucun jeton npm n'existe ni ici ni sur une machine : un workflow ou une
+# action compromis ne peut, au pire, que déposer une version qu'on refusera.
+#
+# Doc lue en brut le 2026-11-03 (npm/documentation) : trusted-publishers.mdx,
+# staged-publishing.mdx, cli/v11/commands/npm-stage.mdx.
+#
+# Sur npmjs.com, la déclaration du publieur de confiance nomme ce fichier
+# (`publish.yml`) : le renommer casse la publication, bruyamment (ENEEDAUTH).
+
+on:
+  push:
+    tags: ['v*']
+
+# Rien par défaut : chaque job demande ce dont il a besoin.
+permissions: {}
+
+# Deux tags poussés coup sur coup ne publient pas en parallèle.
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # Tout le code tiers (dépendances, eslint, jest, tsc) tourne ici, dans un job
+  # qui ne peut pas obtenir de jeton OIDC.
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      # Actions épinglées par SHA de commit (OpenSSF) : un tag se déplace, un
+      # SHA non. Le commentaire donne la version, pour les mises à jour.
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          check-latest: true
+          # Jamais de cache dans un build de publication (doc npm).
+          package-manager-cache: false
+
+      # `npm version` crée le tag `v<version>` : un tag poussé à la main qui ne
+      # correspond pas publierait une autre version que celle annoncée.
+      - name: Check the tag matches package.json
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          node -e "const v=require('./package.json').version;if(process.env.TAG!=='v'+v){console.error('Tag '+process.env.TAG+' does not match package.json version '+v);process.exit(1)}console.log('Publishing '+v)"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      # Le paquet publié ne doit contenir ni specs ni doubles de test.
+      - name: Check package contents
+        run: |
+          npm pack --dry-run --json > pack.json
+          node -e "const f=require('./pack.json')[0].files.map(x=>x.path);const bad=f.filter(p=>/\.spec\.|testing\//.test(p));if(bad.length){console.error('Unexpected files in package:',bad);process.exit(1)}console.log(f.length+' files, none from tests')"
+
+      - name: Keep the build for the stage job
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 1
+
+  # Le seul job qui peut obtenir un jeton OIDC : il n'installe rien et
+  # n'exécute aucun script du paquet.
+  stage:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          check-latest: true
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+
+      - name: Restore the build
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist
+
+      # OIDC exige npm 11.5.1, `npm stage` 11.15.0. Node 24 embarque 11.19.1
+      # (v24.22.2) ; si une ligne de Node plus ancienne revenait dans .nvmrc,
+      # l'échec se nomme ici plutôt qu'en ENEEDAUTH.
+      - name: Check the npm version
+        run: |
+          node -e "const [a,b]=require('child_process').execSync('npm --version').toString().trim().split('.').map(Number);if(a<11||(a===11&&b<15)){console.error('npm >= 11.15.0 required for npm stage, got '+a+'.'+b);process.exit(1)}"
+
+      # `--ignore-scripts` : prepublishOnly relancerait le build, sans les
+      # dépendances qui ne sont pas installées ici. Le build vient du job
+      # précédent. La provenance est générée d'office par la publication OIDC.
+      - name: Stage the version on npm
+        run: npm stage publish --ignore-scripts

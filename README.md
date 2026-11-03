@@ -85,37 +85,48 @@ Pour utiliser ce package dans tes autres projets (`bot`, `gateway` ou `mobile`) 
 
 ## 📦 Publication
 
-Le projet utilise des **Granular Access Tokens** pour la publication afin de contourner la double authentification (2FA) manuelle tout en maintenant une sécurité maximale.
+La publication passe par **GitHub Actions, sans aucun jeton npm** : le workflow
+[`publish.yml`](.github/workflows/publish.yml) s'authentifie auprès de npm par OIDC
+(« trusted publishing ») et **dépose** la version sans la rendre publique
+(`npm stage publish`). Elle ne devient installable qu'après **approbation avec la 2FA**
+du mainteneur. Un workflow, une action ou une dépendance compromis ne peut donc, au
+pire, que déposer une version qu'on refusera. Le paquet porte en plus une attestation
+de provenance qui le relie au commit et au workflow qui l'ont construit.
 
-### Configuration du Token
-1. Générer un token sur NPM avec les permissions `Read and Write`.
-2. Restreindre l'accès au package `@syldel/hl-shared-types` uniquement.
-3. Utiliser l'option `Bypass 2FA` pour permettre l'automatisation.
-
-### Commande de publication rapide
-Si tu n'utilises pas de fichier `.npmrc`, tu peux publier en passant le token directement :
-```bash
-npm publish --access public --//registry.npmjs.org/:_authToken=TON_TOKEN_ICI
-```
-
-### Configuration de la publication
-Créez un fichier .npmrc à la racine (ignoré par Git) pour l'authentification :
-
-```
-//registry.npmjs.org/:_authToken=npm_votre_token_ici
-```
+Jusqu'au 2026-11-03, la publication se faisait depuis le poste avec un jeton « Bypass
+2FA » rangé dans un `.npmrc` : n'importe quel paquet malveillant installé sur la
+machine pouvait le lire et publier à notre place. npm retire d'ailleurs la publication
+directe par jeton en janvier 2027.
 
 ### Publier une nouvelle version
-La commande suivante automatise le build, l'incrémentation de version et l'envoi vers NPM :
 
 ```bash
-npm run release
-```
-
-### Pousse le commit ET le tag sur GitHub
-```bash
+npm version patch   # ou minor, major : met à jour package.json et crée le tag v<version>
 git push origin main --follow-tags
 ```
+
+Le tag `v*` déclenche le workflow : il vérifie que le tag correspond à `package.json`,
+relance lint, tests, build et le contrôle du contenu du paquet, puis dépose la version.
+Il reste à l'approuver :
+
+- sur [npmjs.com](https://www.npmjs.com), onglet **Staged Packages**, bouton **Approve** ;
+- ou en ligne de commande : `npm stage list @syldel/hl-shared-types`, puis
+  `npm stage approve <stage-id>` (demande la 2FA).
+
+Une version déposée par erreur se refuse avec `npm stage reject <stage-id>`.
+
+### Réglages côté npm (une fois)
+
+Dans les réglages du paquet sur npmjs.com :
+
+- **Trusted Publisher** : GitHub Actions, utilisateur `Syldel`, dépôt `hl-shared-types`, workflow
+  `publish.yml`, actions autorisées **`npm stage publish` seulement**. ⚠️ Une
+  déclaration neuve expire si aucune publication ne la valide sous **2 jours**.
+- **Publishing access** : « Require two-factor authentication and disallow tokens ».
+
+⚠️ Renommer `publish.yml` ou le dépôt casse la publication (ENEEDAUTH) : la déclaration
+sur npmjs.com les nomme exactement. Le champ `repository.url` de `package.json` doit
+aussi correspondre au dépôt GitHub.
 
 ---
 
