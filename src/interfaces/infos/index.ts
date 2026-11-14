@@ -5,3 +5,4 @@ export * from './active-asset.interfaces';
 export * from './account-abstraction.type';
 export * from './collateral-balance.interfaces';
 export * from './user-fees.interfaces';
+export * from './user-rate-limit.interfaces';
