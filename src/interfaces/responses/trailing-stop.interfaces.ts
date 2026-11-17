@@ -5,9 +5,11 @@ import { HLOid } from '../common';
  * (`exchange-endpoint`, lue en brut le 2026-11-16) : l'oid directement dans
  * `data`, et non un tableau `statuses` comme pour `order`.
  *
- * ⚠️ Non mesurée à la date de ce type. La doc n'a pas d'onglet d'erreur pour
- * cette action ; le client officiel lit un refus comme `{ status: 'err',
- * response: <texte> }`, le refus d'une action entière (`HLRefusedResponse`).
+ * Mesurée le 2026-11-17 par le gateway (ETH, reduce-only, 10 %, sans
+ * activation) : `{"status":"ok","response":{"type":"trailingStop","data":
+ * {"oid":607975946526}}}`. ⚠️ Le refus ne l'est pas encore : la doc n'a pas
+ * d'onglet d'erreur pour cette action, et le client officiel le lit comme
+ * `{ status: 'err', response: <texte> }` (`HLRefusedResponse`).
  */
 export interface HLTrailingStopResponseData {
   type: 'trailingStop';
