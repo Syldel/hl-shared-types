@@ -15,9 +15,16 @@ Ce package centralise les définitions TypeScript pour l'écosystème **Hyperliq
 * **Common** : Types de base (Hex, DecimalStrings, ID d'ordres).
 * **Account** : États du compte, positions Perp et soldes Spot.
 * **Market** : Métadonnées des actifs et résumés de marché.
-* **Orders** : Définitions des ordres ouverts et historiques.
+* **Orders** : Définitions des ordres ouverts et historiques, et les actions qui les posent
+  (dont `trailingStop`, le trailing stop natif).
 * **Format** : les règles de **tick et de lot** d'Hyperliquid — la seule logique exécutable
-  du package, et la seule qui décide ce qui part vers l'exchange.
+  du package qui décide ce qui part vers l'exchange.
+* `src/orders/` : du code aussi, mais en lecture. Les libellés exacts d'`orderType`
+  (`HL_ORDER_TYPE`, `isKnownOrderType` — comparer à l'exact, jamais par morceau : un
+  `"Trailing Stop Market"` a passé pour un stop ordinaire dans les trois consommateurs) et
+  `parseTrailingStopCondition`, le lecteur **strict** de l'état d'un trailing stop natif, que
+  l'exchange écrit en texte libre dans `triggerCondition`. Un texte inconnu lève, il ne se
+  devine pas. Les formes lues sont datées dans `test/trailing-stop-condition.spec.ts`.
 
 ---
 

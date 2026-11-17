@@ -21,3 +21,19 @@ export function isHLErrorResponse(obj: unknown): obj is HLErrorResponse {
     typeof errorObj.message === 'string'
   );
 }
+
+/**
+ * Le refus d'une action **entière** par `/exchange`, en HTTP 200 : le texte est
+ * dans `response`, sans `message`. Ce n'est pas `HLErrorResponse`, qui décrit
+ * le corps d'une erreur HTTP.
+ *
+ * Lu sur le compte de développement, par exemple le 2026-10-27 :
+ * `{"status":"err","response":"Error placing new order during modify: Post only
+ * order would have immediately matched, bbo was 2345.4@2345.5."}`
+ * (`nest-hyperliquid-gateway/docs/sources.md`). C'est aussi la forme d'un agent
+ * inconnu de l'exchange (« User or API Wallet … does not exist »).
+ */
+export interface HLRefusedResponse {
+  status: 'err';
+  response: string;
+}
